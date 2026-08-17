@@ -1,7 +1,9 @@
 #include <iostream>
 
+#include "cpu.hpp"
+
 int main() {
-    std::cout << "a" << std::endl;
+    CPU::Core core;
 
     return 0;
 }

@@ -39,6 +39,8 @@ namespace CPU {
         ZeroPageIndexedY
     };
 
+
+    class Core;
     // rw
     //  0 = read 
     //  1 = write 
@@ -46,7 +48,7 @@ namespace CPU {
     typedef struct Instruction {
         uint8_t size, cycles, rw;
         AddressingMode mode;
-        std::function<void()> fnc;
+        void (Core::*exec)(void) = nullptr;
     } Instruction;
 
 };
