@@ -21,9 +21,14 @@ namespace CPU {
 
         void addrBusLoadFromResetVector(bool first);
         void addrBusLoadFromPC();
-        void dataBusWriteToPC(bool leastSig);
-        void clearPC();
 
+        void dataBusWriteToPC(bool leastSig);
+
+        void addToPC(uint8_t add);
+        void clearPC();
+        void incrementPC();
+
+        
         // Instructions 
         void ADC();
         void AND();

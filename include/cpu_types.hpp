@@ -39,6 +39,10 @@ namespace CPU {
         ZeroPageIndexedY
     };
 
+    enum rwSignal {
+        read, write, readModifyWrite
+    };
+
 
     class Core;
     // rw

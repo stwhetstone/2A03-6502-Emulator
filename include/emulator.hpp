@@ -18,6 +18,8 @@ namespace Emulator {
         CPU::Core cpu;
 
         Core();
+
+        CPU::Instruction* getNextInstruction(uint16_t& ramAddress);
     };
 };
 
