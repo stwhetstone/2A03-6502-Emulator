@@ -14,8 +14,15 @@ namespace CPU {
         Emulator::MainBus &bus;
 
         std::array<Instruction, 255> instructionTable;
+        const std::array<uint16_t, 2> resetVector = {0xfffc, 0xfffd};
+
 
         Core(Emulator::MainBus &t_bus);
+
+        void addrBusLoadFromResetVector(bool first);
+        void addrBusLoadFromPC();
+        void dataBusWriteToPC(bool leastSig);
+        void clearPC();
 
         // Instructions 
         void ADC();
@@ -29,61 +36,61 @@ namespace CPU {
         void BMI();
         void BNE();
         void BPL();
-        
+
         void BRK();
         void BVC();
         void BVS();
         void CLC();
         void CLD();
-        
+
         void CLI();
         void CLV();
         void CMP();
         void CPX();
         void CPY();
-        
+
         void DEC();
         void DEX();
         void DEY();
         void EOR();
         void INC();
-        
+
         void INX();
         void INY();
         void JMP();
         void JSR();
         void LDA();
-        
+
         void LDX();
         void LDY();
         void LSR();
         void NOP();
         void ORA();
-        
+
         void PHA();
         void PHP();
         void PLA();
         void PLP();
         void ROL();
-        
+
         void ROR();
         void RTI();
         void RTS();
         void SBC();
         void SEC();
-        
+
         void SED();
         void SEI();
         void STA();
         void STX();
         void STY();
-        
+
         void TAX();
         void TAY();
         void TSX();
         void TXA();
         void TXS();
-        
+
         void TYA();
     };
 };

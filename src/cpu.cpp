@@ -5,24 +5,54 @@
 CPU::Core::Core(Emulator::MainBus &t_bus) : bus(t_bus) {
     this->registers = {0, 0, 0, 0xFD, 0b00101100, 0xFFFC};
 
+
     // LDA
-    instructionTable[0xA9] = { 2, 2, 0, AddressingMode::Immediate, &Core::LDA};
-    instructionTable[0xA5] = { 2, 3, 0, AddressingMode::ZeroPage, &Core::LDA};
-    instructionTable[0xB5] = { 2, 4, 0, AddressingMode::ZeroPageIndexedX, &Core::LDA};
-    instructionTable[0xAD] = { 3, 4, 0, AddressingMode::Absolute, &Core::LDA};
-    instructionTable[0xBD] = { 3, 4, 0, AddressingMode::AbsoluteIndexedX, &Core::LDA};
-    instructionTable[0xB9] = { 3, 4, 0, AddressingMode::AbsoluteIndexedY, &Core::LDA};
-    instructionTable[0xA1] = { 2, 6, 0, AddressingMode::IndirectIndexedX, &Core::LDA};
-    instructionTable[0xB1] = { 2, 5, 0, AddressingMode::IndirectIndexedY, &Core::LDA};
+    instructionTable[0xa9] = { 2, 2, 0, AddressingMode::Immediate, &Core::LDA};
+    instructionTable[0xa5] = { 2, 3, 0, AddressingMode::ZeroPage, &Core::LDA};
+    instructionTable[0xb5] = { 2, 4, 0, AddressingMode::ZeroPageIndexedX, &Core::LDA};
+    instructionTable[0xad] = { 3, 4, 0, AddressingMode::Absolute, &Core::LDA};
+    instructionTable[0xbd] = { 3, 4, 0, AddressingMode::AbsoluteIndexedX, &Core::LDA};
+    instructionTable[0xb9] = { 3, 4, 0, AddressingMode::AbsoluteIndexedY, &Core::LDA};
+    instructionTable[0xa1] = { 2, 6, 0, AddressingMode::IndirectIndexedX, &Core::LDA};
+    instructionTable[0xb1] = { 2, 5, 0, AddressingMode::IndirectIndexedY, &Core::LDA};
 
     // STA
     instructionTable[0x85] = { 2, 3, 0, AddressingMode::ZeroPage, &Core::STA};
     instructionTable[0x95] = { 2, 4, 0, AddressingMode::ZeroPageIndexedX, &Core::STA};
-    instructionTable[0x8D] = { 2, 4, 0, AddressingMode::Absolute, &Core::STA};
-    instructionTable[0x9D] = { 2, 5, 0, AddressingMode::AbsoluteIndexedX, &Core::STA};
+    instructionTable[0x8d] = { 2, 4, 0, AddressingMode::Absolute, &Core::STA};
+    instructionTable[0x9d] = { 2, 5, 0, AddressingMode::AbsoluteIndexedX, &Core::STA};
     instructionTable[0x99] = { 2, 5, 0, AddressingMode::AbsoluteIndexedY, &Core::STA};
     instructionTable[0x81] = { 2, 6, 0, AddressingMode::IndexedIndirectX, &Core::STA};
     instructionTable[0x91] = { 2, 6, 0, AddressingMode::IndirectIndexedX, &Core::STA};
+}
+
+
+
+void CPU::Core::addrBusLoadFromResetVector(bool first) {
+    if(first) {
+        bus.address = resetVector[0];
+        return;
+    }
+
+    bus.address = resetVector[1];
+}
+
+void CPU::Core::clearPC() {
+    registers.PC = 0xffff;
+}
+
+
+void CPU::Core::dataBusWriteToPC(bool leastSig) {
+    if(leastSig) {
+        registers.PC &= bus.data;
+        return;
+    }
+
+    registers.PC |= (bus.data << 8);
+}
+
+void CPU::Core::addrBusLoadFromPC() {
+    bus.address = registers.PC;
 }
 
 
@@ -144,7 +174,7 @@ void CPU::Core::JSR() {
 }
 
 void CPU::Core::LDA() {
-
+    registers.A = bus.data;
 }
 
 void CPU::Core::LDY() {
@@ -212,7 +242,7 @@ void CPU::Core::SEI() {
 }
 
 void CPU::Core::STA() {
-
+    bus.data = registers.A;
 }
 
 void CPU::Core::STX() {

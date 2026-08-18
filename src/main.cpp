@@ -1,9 +1,9 @@
 #include <iostream>
 
-#include "cpu.hpp"
+#include "emulator.hpp"
 
 int main() {
-    CPU::Core core;
-
+    Emulator::Core emulator;
+    
     return 0;
 }
