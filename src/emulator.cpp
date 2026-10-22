@@ -11,7 +11,7 @@ Emulator::Core::Core() : cpu(this->bus) {
     rom[0xfffc - (0xffff - 0xbfe0)] = 0x00;
     rom[0xfffd - (0xffff - 0xbfe0)] = 0x00;
     rom[0x00] = 0xa9;
-    rom[0x01] = 0x00;
+    rom[0x01] = 0x01;
     rom[0x02] = 0x8d;
     rom[0x03] = 0x00;
     rom[0x04] = 0x02;
@@ -47,13 +47,15 @@ Emulator::Core::Core() : cpu(this->bus) {
 
         if(inst->mode == CPU::AddressingMode::Immediate) {
             bus.data = (uint8_t)(0x00ff & ramAddress);
-        } else if(inst->rw == CPU::rwSignal::read) {
+        } else if(inst->rw == CPU::RWSignal::read) {
             bus.data = ram[ramAddress];
-        } else if(inst->rw == CPU::rwSignal::write) {
-            ram[ramAddress] = bus.data;
         }
 
         (cpu.*(inst->exec))();
+
+        if(inst->rw == CPU::RWSignal::write) {
+            ram[ramAddress] = bus.data;
+        }
 
         cpu.addToPC(inst->size);
     }

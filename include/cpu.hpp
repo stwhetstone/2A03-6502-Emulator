@@ -64,6 +64,8 @@ namespace CPU {
         void INY();
         void JMP();
         void JSR();
+
+        // load value from memory into A register
         void LDA();
 
         void LDX();
@@ -86,6 +88,8 @@ namespace CPU {
 
         void SED();
         void SEI();
+
+        // store A register in memory
         void STA();
         void STX();
         void STY();

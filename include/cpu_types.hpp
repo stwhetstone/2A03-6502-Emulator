@@ -39,18 +39,15 @@ namespace CPU {
         ZeroPageIndexedY
     };
 
-    enum rwSignal {
+    enum RWSignal {
         read, write, readModifyWrite
     };
 
 
     class Core;
-    // rw
-    //  0 = read 
-    //  1 = write 
-    //  2 = read then write
     typedef struct Instruction {
-        uint8_t size, cycles, rw;
+        uint8_t size, cycles;
+        RWSignal rw;
         AddressingMode mode;
         void (Core::*exec)(void) = nullptr;
     } Instruction;
