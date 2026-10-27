@@ -14,7 +14,7 @@ namespace CPU {
         Emulator::MainBus &bus;
 
         std::array<Instruction, 255> instructionTable;
-        const std::array<uint16_t, 2> resetVector = {0xfffc, 0xfffd};
+        const std::array<uint16_t, 2> resetVector = {0x0, 0x0};
 
 
         Core(Emulator::MainBus &t_bus);
