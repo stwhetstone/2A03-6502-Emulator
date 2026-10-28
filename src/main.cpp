@@ -4,6 +4,6 @@
 
 int main() {
     Emulator::Core emulator;
-    
+
     return 0;
 }

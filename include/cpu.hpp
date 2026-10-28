@@ -19,16 +19,15 @@ namespace CPU {
 
         Core(Emulator::MainBus &t_bus);
 
-        void addrBusLoadFromResetVector(bool first);
-        void addrBusLoadFromPC();
-
-        void dataBusWriteToPC(bool leastSig);
-
         void addToPC(uint8_t add);
         void clearPC();
         void incrementPC();
 
-        
+        void writeDataBusToPc(bool isLeastSigByte);
+        void writePcToAddrBus();
+        void writeResetVectorToAddrBus(bool isFirstByte);
+
+
         // Instructions 
         void ADC();
         void AND();

@@ -3,12 +3,12 @@
 
 #include "emulator.hpp"
 #include "cpu.hpp"
+#include "cpu_types.hpp"
+
 
 Emulator::Core::Core() : cpu(this->bus), rom(this->bus) {
-    bus = { 0, 0, 0, 0, 0 };
-
-
     rom.textToByteFile("assembly/test");
+    bus = { 0, 0, CPU::RWSignal::read, 0, 0 };
 
     //cpu.clearPC();
     //for(int i = 0; i < 2; i++) {
@@ -33,13 +33,13 @@ Emulator::Core::Core() : cpu(this->bus), rom(this->bus) {
 
         if(inst->mode == CPU::AddressingMode::Immediate) {
             bus.data = (uint8_t)(0x00ff & ramAddress);
-        } else if(inst->rw == CPU::RWSignal::read) {
+        } else if(bus.rw == CPU::RWSignal::read) {
             bus.data = ram[ramAddress];
         }
 
         (cpu.*(inst->exec))();
 
-        if(inst->rw == CPU::RWSignal::write) {
+        if(bus.rw == CPU::RWSignal::write) {
             ram[ramAddress] = bus.data;
         }
 
@@ -51,11 +51,11 @@ Emulator::Core::Core() : cpu(this->bus), rom(this->bus) {
 
 
 CPU::Instruction* Emulator::Core::getNextInstruction(uint16_t* ramAddress) {
-    cpu.addrBusLoadFromPC();
+    cpu.writePcToAddrBus();
     uint16_t pc = bus.address;
 
 
-    if(rom.dataBusLoadByteFromPC(pc) == -1) {
+    if(rom.writeByteFromPcToDataBus(pc) == -1) {
         return nullptr;
     }
     uint8_t opCode = bus.data;
@@ -63,7 +63,7 @@ CPU::Instruction* Emulator::Core::getNextInstruction(uint16_t* ramAddress) {
     std::array<uint16_t, 3> instBytes;
 
     for(int i = pc; i < pc + inst->size; i++) {
-        if(rom.dataBusLoadByteFromPC(i) == -1) {
+        if(rom.writeByteFromPcToDataBus(i) == -1) {
             inst = nullptr;
             return inst;
         }
@@ -72,6 +72,8 @@ CPU::Instruction* Emulator::Core::getNextInstruction(uint16_t* ramAddress) {
     }
 
     *ramAddress = (instBytes[1]) | (instBytes[2] << 8);
+
+    bus.rw = inst->rw;
 
     return inst;
 }

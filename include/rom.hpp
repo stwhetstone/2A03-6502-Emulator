@@ -13,7 +13,7 @@ namespace ROM {
 
         Core(Emulator::MainBus &t_bus);
 
-        char dataBusLoadByteFromPC(uint16_t pc);
+        char writeByteFromPcToDataBus(uint16_t pc);
         void textToByteFile(std::string fileName);
 
         private:

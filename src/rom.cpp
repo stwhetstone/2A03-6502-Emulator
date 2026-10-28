@@ -5,10 +5,10 @@
 #include "rom.hpp"
 
 
-
 ROM::Core::Core(Emulator::MainBus &t_bus) : bus(t_bus) {
     _size = 0;
 }
+
 
 void ROM::Core::textToByteFile(std::string fileName) {
     std::ifstream file(fileName + ".txt");
@@ -29,8 +29,7 @@ void ROM::Core::textToByteFile(std::string fileName) {
 }
 
 
-
-char ROM::Core::dataBusLoadByteFromPC(uint16_t pc) {
+char ROM::Core::writeByteFromPcToDataBus(uint16_t pc) {
     if(pc > _size) {
         return -1;
     }

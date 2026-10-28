@@ -28,13 +28,8 @@ CPU::Core::Core(Emulator::MainBus &t_bus) : bus(t_bus) {
 
 
 
-void CPU::Core::addrBusLoadFromResetVector(bool first) {
-    if(first) {
-        bus.address = resetVector[0];
-        return;
-    }
-
-    bus.address = resetVector[1];
+void CPU::Core::addToPC(uint8_t add) {
+    registers.PC += add;
 }
 
 
@@ -43,8 +38,13 @@ void CPU::Core::clearPC() {
 }
 
 
-void CPU::Core::dataBusWriteToPC(bool leastSig) {
-    if(leastSig) {
+void CPU::Core::incrementPC() {
+    registers.PC++;
+}
+
+
+void CPU::Core::writeDataBusToPc(bool isLeastSigByte) {
+    if(isLeastSigByte) {
         registers.PC &= bus.data;
         return;
     }
@@ -53,19 +53,20 @@ void CPU::Core::dataBusWriteToPC(bool leastSig) {
 }
 
 
-void CPU::Core::addrBusLoadFromPC() {
+void CPU::Core::writePcToAddrBus() {
     bus.address = registers.PC;
 }
 
 
-void CPU::Core::incrementPC() {
-    registers.PC++;
+void CPU::Core::writeResetVectorToAddrBus(bool isFirstByte) {
+    if(isFirstByte) {
+        bus.address = resetVector[0];
+        return;
+    }
+
+    bus.address = resetVector[1];
 }
 
-
-void CPU::Core::addToPC(uint8_t add) {
-    registers.PC += add;
-}
 
 
 void CPU::Core::ADC() {
