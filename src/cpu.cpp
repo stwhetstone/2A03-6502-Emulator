@@ -209,6 +209,9 @@ void CPU::Core::JSR() {
 
 void CPU::Core::LDA() {
     registers.A = bus.data;
+
+    updateStatusRegister(StatusFlag::Z, registers.A == 0);
+    updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
 }
 
 void CPU::Core::LDY() {
