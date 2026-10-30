@@ -42,6 +42,28 @@ void CPU::Core::incrementPC() {
     registers.PC++;
 }
 
+/* 
+ * isSet = false
+ * flag = D = 3
+ * registers.P = 1001
+ * 
+ *      bit = 1
+ *      setBit = 1 << 3 = 0100
+ *
+ *      P = P | setBit = 1001 | 0100 = 1101
+ *
+ *      bitMask = ~(bit << flag) = ~(1 << 3) = ~(0100) = 1011
+ *      P = P & bitMask = 1101 & 1011 = 1001
+ */
+void CPU::Core::updateStatusRegister(StatusFlag flag, bool isSet) {
+    uint8_t bit = isSet ? 0 : 1;
+    uint8_t setBit = 1 << flag;
+
+    this->registers.P |= setBit;
+
+    uint8_t bitMask = ~(bit << flag);
+    this->registers.P &= bitMask;
+}
 
 void CPU::Core::writeDataBusToPc(bool isLeastSigByte) {
     if(isLeastSigByte) {

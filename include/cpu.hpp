@@ -22,6 +22,7 @@ namespace CPU {
         void addToPC(uint8_t add);
         void clearPC();
         void incrementPC();
+        void updateStatusRegister(StatusFlag flag, bool isSet);
 
         void writeDataBusToPc(bool isLeastSigByte);
         void writePcToAddrBus();

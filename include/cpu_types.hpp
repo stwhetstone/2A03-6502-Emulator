@@ -13,11 +13,18 @@ namespace CPU {
     } Registers;
 
     enum RegisterName {
-        A, X, Y, S, P, PC
+        A, X, Y, S, Status, PC
     };
     
     enum StatusFlag {
-        C, Z, I, D, B, One, V, N
+        C = 0,
+        Z = 1,
+        I = 2,
+        D = 3,
+        B = 4,
+        One = 5,
+        V = 6,
+        N = 7
     };
 
 
