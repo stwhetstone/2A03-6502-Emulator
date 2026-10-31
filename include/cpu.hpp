@@ -65,11 +65,9 @@ namespace CPU {
         void JMP();
         void JSR();
 
-        // load value from memory into A register
-        void LDA();
-
-        void LDX();
-        void LDY();
+        void LDA(); // load value from memory into A register
+        void LDX(); // load value from memory into X register
+        void LDY(); // load value from memory into Y register
         void LSR();
         void NOP();
         void ORA();
@@ -88,11 +86,9 @@ namespace CPU {
 
         void SED();
         void SEI();
-
-        // store A register in memory
-        void STA();
-        void STX();
-        void STY();
+        void STA(); // store A register in memory
+        void STX(); // store X register in memory
+        void STY(); // store Y register in memory
 
         void TAX();
         void TAY();

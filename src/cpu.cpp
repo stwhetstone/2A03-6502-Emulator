@@ -16,6 +16,20 @@ CPU::Core::Core(Emulator::MainBus &t_bus) : bus(t_bus) {
     instructionTable[0xa1] = { 2, 6, RWSignal::read, AddressingMode::IndirectIndexedX, &Core::LDA};
     instructionTable[0xb1] = { 2, 5, RWSignal::read, AddressingMode::IndirectIndexedY, &Core::LDA};
 
+    // LDX
+    instructionTable[0xa2] = { 2, 2, RWSignal::read, AddressingMode::Immediate, &Core::LDX};
+    instructionTable[0xa6] = { 2, 3, RWSignal::read, AddressingMode::ZeroPage, &Core::LDX};
+    instructionTable[0xb6] = { 2, 4, RWSignal::read, AddressingMode::ZeroPageIndexedY, &Core::LDX};
+    instructionTable[0xae] = { 3, 4, RWSignal::read, AddressingMode::Absolute, &Core::LDX};
+    instructionTable[0xbe] = { 3, 5, RWSignal::read, AddressingMode::AbsoluteIndexedY, &Core::LDX};
+
+    // LDY
+    instructionTable[0xa0] = { 2, 2, RWSignal::read, AddressingMode::Immediate, &Core::LDY}; 
+    instructionTable[0xa4] = { 2, 3, RWSignal::read, AddressingMode::ZeroPage, &Core::LDY};
+    instructionTable[0xb4] = { 2, 4, RWSignal::read, AddressingMode::ZeroPageIndexedX, &Core::LDY};
+    instructionTable[0xac] = { 3, 4, RWSignal::read, AddressingMode::Absolute, &Core::LDY};
+    instructionTable[0xbc] = { 3, 5, RWSignal::read, AddressingMode::AbsoluteIndexedX, &Core::LDY};
+
     // STA
     instructionTable[0x85] = { 2, 3, RWSignal::write, AddressingMode::ZeroPage, &Core::STA};
     instructionTable[0x95] = { 2, 4, RWSignal::write, AddressingMode::ZeroPageIndexedX, &Core::STA};
@@ -25,20 +39,15 @@ CPU::Core::Core(Emulator::MainBus &t_bus) : bus(t_bus) {
     instructionTable[0x81] = { 2, 6, RWSignal::write, AddressingMode::IndexedIndirectX, &Core::STA};
     instructionTable[0x91] = { 2, 6, RWSignal::write, AddressingMode::IndirectIndexedX, &Core::STA};
 
-    // LDX
-    instructionTable[0xa2] = { 2, 3, RWSignal::read, AddressingMode::Immediate, &Core::LDX};
-    instructionTable[0xa6] = { 2, 3, RWSignal::read, AddressingMode::ZeroPage, &Core::LDX};
-    instructionTable[0xb6] = { 2, 3, RWSignal::read, AddressingMode::ZeroPageIndexedY, &Core::LDX};
-    instructionTable[0xae] = { 2, 3, RWSignal::read, AddressingMode::Absolute, &Core::LDX};
-    instructionTable[0xbe] = { 2, 3, RWSignal::read, AddressingMode::AbsoluteIndexedY, &Core::LDX};
+    // STX
+    instructionTable[0x86] = { 2, 3, RWSignal::write, AddressingMode::ZeroPage, &Core::STX};
+    instructionTable[0x96] = { 2, 4, RWSignal::write, AddressingMode::ZeroPageIndexedY, &Core::STX};
+    instructionTable[0x8e] = { 3, 4, RWSignal::write, AddressingMode::Absolute, &Core::STX};
 
-    // LDY
-    instructionTable[0xa0] = { 2, 3, RWSignal::read, AddressingMode::Immediate, &Core::LDY};       
-    instructionTable[0xa4] = { 2, 3, RWSignal::read, AddressingMode::ZeroPage, &Core::LDY};        
-    instructionTable[0xb4] = { 2, 3, RWSignal::read, AddressingMode::ZeroPageIndexedX, &Core::LDY};
-    instructionTable[0xac] = { 2, 3, RWSignal::read, AddressingMode::Absolute, &Core::LDY};        
-    instructionTable[0xbc] = { 2, 3, RWSignal::read, AddressingMode::AbsoluteIndexedX, &Core::LDY};
-
+    // STY
+    instructionTable[0x84] = { 2, 3, RWSignal::write, AddressingMode::ZeroPage, &Core::STY};
+    instructionTable[0x94] = { 2, 4, RWSignal::write, AddressingMode::ZeroPageIndexedX, &Core::STY};
+    instructionTable[0x8c] = { 3, 4, RWSignal::write, AddressingMode::Absolute, &Core::STY};
 }
 
 
@@ -311,11 +320,11 @@ void CPU::Core::STA() {
 }
 
 void CPU::Core::STX() {
-
+    bus.data = registers.X;
 }
 
 void CPU::Core::STY() {
-
+    bus.data = registers.Y;
 }
 
 void CPU::Core::TAX() {

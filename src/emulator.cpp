@@ -46,6 +46,7 @@ Emulator::Core::Core() : cpu(this->bus), rom(this->bus) {
         cpu.addToPC(inst->size);
     }
 
+
     printf("%x %x %x\n", cpu.registers.A, cpu.registers.X, cpu.registers.Y);
 }
 
