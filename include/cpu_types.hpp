@@ -15,7 +15,7 @@ namespace CPU {
     enum RegisterName {
         A, X, Y, S, Status, PC
     };
-    
+
     enum StatusFlag {
         C = 0,
         Z = 1,
