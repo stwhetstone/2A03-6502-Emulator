@@ -20,7 +20,7 @@ namespace Emulator {
 
         Core();
 
-        CPU::Instruction* getNextInstruction(uint16_t* ramAddress);
+        CPU::Instruction* getNextInstruction();
     };
 };
 

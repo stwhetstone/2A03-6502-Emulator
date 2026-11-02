@@ -22,25 +22,34 @@ Emulator::Core::Core() : cpu(this->bus), rom(this->bus) {
 
 
     CPU::Instruction* inst;
-    uint16_t ramAddress = 0;
 
     while(true) {
-        inst = getNextInstruction(&ramAddress);
+        inst = getNextInstruction();
         if(inst == nullptr) { 
             break;
         }
 
+        if(inst->mode == CPU::AddressingMode::ZeroPageIndexedX) {
+            cpu.addXToAddrBusZeroPage();
+        } else if(inst->mode == CPU::AddressingMode::ZeroPageIndexedY) {
+            cpu.addYToAddrBusZeroPage();
+        } else if(inst->mode == CPU::AddressingMode::AbsoluteIndexedX) {
+            cpu.addXToAddrBus();
+        } else if(inst->mode == CPU::AddressingMode::AbsoluteIndexedY) {
+            cpu.addYToAddrBus();
+        }
+
 
         if(inst->mode == CPU::AddressingMode::Immediate) {
-            bus.data = (uint8_t)(0x00ff & ramAddress);
+            bus.data = (uint8_t)(0x00ff & bus.address);
         } else if(bus.rw == CPU::RWSignal::read) {
-            bus.data = ram[ramAddress];
+            bus.data = ram[bus.address];
         }
 
         (cpu.*(inst->exec))();
 
         if(bus.rw == CPU::RWSignal::write) {
-            ram[ramAddress] = bus.data;
+            ram[bus.address] = bus.data;
         }
 
         cpu.addToPC(inst->size);
@@ -51,10 +60,9 @@ Emulator::Core::Core() : cpu(this->bus), rom(this->bus) {
 }
 
 
-CPU::Instruction* Emulator::Core::getNextInstruction(uint16_t* ramAddress) {
+CPU::Instruction* Emulator::Core::getNextInstruction() {
     cpu.writePcToAddrBus();
     uint16_t pc = bus.address;
-
 
     if(rom.writeByteFromPcToDataBus(pc) == -1) {
         return nullptr;
@@ -72,7 +80,7 @@ CPU::Instruction* Emulator::Core::getNextInstruction(uint16_t* ramAddress) {
         instBytes[i - pc] = bus.data;
     }
 
-    *ramAddress = (instBytes[1]) | (instBytes[2] << 8);
+    bus.address = (instBytes[1]) | (instBytes[2] << 8);
 
     bus.rw = inst->rw;
 

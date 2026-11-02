@@ -39,8 +39,6 @@ namespace CPU {
         AbsoluteIndexedX,
         AbsoluteIndexedY,
         IndexedIndirectX,
-        IndexedIndirectY,
-        IndirectIndexedX,
         IndirectIndexedY,
         ZeroPageIndexedX,
         ZeroPageIndexedY
