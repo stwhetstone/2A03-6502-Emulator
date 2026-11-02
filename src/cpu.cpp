@@ -5,7 +5,9 @@
 CPU::Core::Core(Emulator::MainBus &t_bus) : bus(t_bus) {
     this->registers = {0, 0, 0, 0xFD, 0b00101100, 0xFFFC};
 
-
+    // to copy
+    // instructionTable[0x] = { , , RWSignal::, AddressingMode::, &Core:: };
+    
     // LDA
     instructionTable[0xa9] = { 2, 2, RWSignal::read, AddressingMode::Immediate, &Core::LDA};
     instructionTable[0xa5] = { 2, 3, RWSignal::read, AddressingMode::ZeroPage, &Core::LDA};
@@ -48,6 +50,26 @@ CPU::Core::Core(Emulator::MainBus &t_bus) : bus(t_bus) {
     instructionTable[0x84] = { 2, 3, RWSignal::write, AddressingMode::ZeroPage, &Core::STY};
     instructionTable[0x94] = { 2, 4, RWSignal::write, AddressingMode::ZeroPageIndexedX, &Core::STY};
     instructionTable[0x8c] = { 3, 4, RWSignal::write, AddressingMode::Absolute, &Core::STY};
+
+
+    // TAX
+    instructionTable[0xaa] = { 1, 2, RWSignal::read, AddressingMode::Implied, &Core::TAX };
+
+    // TAY
+    instructionTable[0xa8] = { 1, 2, RWSignal::read, AddressingMode::Implied, &Core::TAY };
+
+    // TSX
+    instructionTable[0xba] = { 1, 2, RWSignal::read, AddressingMode::Implied, &Core::TSX };
+
+    // TXA
+    instructionTable[0x8a] = { 1, 2, RWSignal::read, AddressingMode::Implied, &Core::TXA };
+
+    // TXS
+    instructionTable[0x9a] = { 1, 2, RWSignal::read, AddressingMode::Implied, &Core::TXS };
+
+    // TYA
+    instructionTable[0x98] = { 1, 2, RWSignal::read, AddressingMode::Implied, &Core::TYA };
+
 }
 
 
@@ -139,117 +161,146 @@ void CPU::Core::ADC() {
 
 }
 
+
 void CPU::Core::AND() {
 
 }
+
 
 void CPU::Core::ASL() {
 
 }
 
+
 void CPU::Core::BCC() {
 
 }
+
 
 void CPU::Core::BCS() {
 
 }
 
+
 void CPU::Core::BEQ() {
 
 }
+
 
 void CPU::Core::BIT() {
 
 }
 
+
 void CPU::Core::BMI() {
 
 }
+
 
 void CPU::Core::BNE() {
 
 }
 
+
 void CPU::Core::BPL() {
 
 }
+
 
 void CPU::Core::BRK() {
 
 }
 
+
 void CPU::Core::BVC() {
 
 }
+
 
 void CPU::Core::BVS() {
 
 }
 
+
 void CPU::Core::CLC() {
 
 }
+
 
 void CPU::Core::CLD() {
 
 }
 
+
 void CPU::Core::CLI() {
 
 }
+
 
 void CPU::Core::CLV() {
 
 }
 
+
 void CPU::Core::CMP() {
 
 }
+
 
 void CPU::Core::CPX() {
 
 }
 
+
 void CPU::Core::CPY() {
 
 }
+
 
 void CPU::Core::DEC() {
 
 }
 
+
 void CPU::Core::DEX() {
 
 }
+
 
 void CPU::Core::DEY() {
 
 }
 
+
 void CPU::Core::EOR() {
 
 }
+
 
 void CPU::Core::INC() {
 
 }
 
+
 void CPU::Core::INX() {
 
 }
+
 
 void CPU::Core::INY() {
 
 }
 
+
 void CPU::Core::JMP() {
 
 }
 
+
 void CPU::Core::JSR() {
 
 }
+
 
 void CPU::Core::LDA() {
     registers.A = bus.data;
@@ -257,6 +308,7 @@ void CPU::Core::LDA() {
     updateStatusRegister(StatusFlag::Z, registers.A == 0);
     updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
 }
+
 
 
 void CPU::Core::LDX() {
@@ -267,6 +319,7 @@ void CPU::Core::LDX() {
 }
 
 
+
 void CPU::Core::LDY() {
     registers.Y = bus.data;
 
@@ -275,99 +328,140 @@ void CPU::Core::LDY() {
 }
 
 
+
 void CPU::Core::LSR() {
 
 }
+
 
 void CPU::Core::NOP() {
 
 }
 
+
 void CPU::Core::ORA() {
 
 }
+
 
 void CPU::Core::PHA() {
 
 }
 
+
 void CPU::Core::PHP() {
 
 }
+
 
 void CPU::Core::PLA() {
 
 }
 
+
 void CPU::Core::PLP() {
 
 }
+
 
 void CPU::Core::ROL() {
 
 }
 
+
 void CPU::Core::ROR() {
 
 }
+
 
 void CPU::Core::RTI() {
 
 }
 
+
 void CPU::Core::RTS() {
 
 }
+
 
 void CPU::Core::SBC() {
 
 }
 
+
 void CPU::Core::SEC() {
 
 }
+
 
 void CPU::Core::SED() {
 
 }
 
+
 void CPU::Core::SEI() {
 
 }
+
 
 void CPU::Core::STA() {
     bus.data = registers.A;
 }
 
+
 void CPU::Core::STX() {
     bus.data = registers.X;
 }
+
 
 void CPU::Core::STY() {
     bus.data = registers.Y;
 }
 
-void CPU::Core::TAX() {
 
+void CPU::Core::TAX() {
+    registers.X = registers.A;
+
+    updateStatusRegister(StatusFlag::Z, registers.A == 0);
+    updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
 }
+
 
 void CPU::Core::TAY() {
+    registers.Y = registers.A;
 
+    updateStatusRegister(StatusFlag::Z, registers.A == 0);
+    updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
 }
+
 
 void CPU::Core::TSX() {
+    registers.X = registers.S;
 
+    updateStatusRegister(StatusFlag::Z, registers.A == 0);
+    updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
 }
+
 
 void CPU::Core::TXA() {
+    registers.A = registers.X;
 
+    updateStatusRegister(StatusFlag::Z, registers.A == 0);
+    updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
 }
+
 
 void CPU::Core::TXS() {
+    registers.S = registers.X;
 
+    updateStatusRegister(StatusFlag::Z, registers.A == 0);
+    updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
 }
+
 
 void CPU::Core::TYA() {
+    registers.A = registers.Y;
 
+    updateStatusRegister(StatusFlag::Z, registers.A == 0);
+    updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
 }
-

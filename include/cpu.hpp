@@ -96,13 +96,13 @@ namespace CPU {
         void STX(); // store X register in memory
         void STY(); // store Y register in memory
 
-        void TAX();
-        void TAY();
-        void TSX();
-        void TXA();
-        void TXS();
+        void TAX(); // X = A
+        void TAY(); // Y = A
+        void TSX(); // X = S
+        void TXA(); // A = X
+        void TXS(); // S = X
 
-        void TYA();
+        void TYA(); // A = Y
     };
 };
 
