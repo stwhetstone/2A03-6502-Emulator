@@ -53,11 +53,11 @@ Emulator::Core::Core() : cpu(this->bus), rom(this->bus) {
         }
 
         cpu.addToPC(inst->size);
-        printf("A: %2x X: %2x Y: %2x S: %2x\n\n", cpu.registers.A, cpu.registers.X, cpu.registers.Y, cpu.registers.S);
+        printf("A: %2x X: %2x Y: %2x S: %2x\n\n", cpu.registers.A, cpu.registers.X, cpu.registers.Y, cpu.registers.P);
     }
 
 
-    printf("A: %x X: %x Y: %x\n", cpu.registers.A, cpu.registers.X, cpu.registers.Y);
+    printf("A: %2x X: %2x Y: %2x S: %2x\n\n", cpu.registers.A, cpu.registers.X, cpu.registers.Y, cpu.registers.P);
 }
 
 

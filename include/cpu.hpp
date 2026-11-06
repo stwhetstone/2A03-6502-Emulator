@@ -19,6 +19,9 @@ namespace CPU {
 
         Core(Emulator::MainBus &t_bus);
 
+        template <typename T>
+        static uint8_t getMostSigBit(T value);
+
         void addToPC(uint8_t add);
         void addXToAddrBus();
         void addXToAddrBusZeroPage();
@@ -28,6 +31,7 @@ namespace CPU {
         void clearPC();
         void incrementPC();
         void updateStatusRegister(StatusFlag flag, bool isSet);
+
 
 
         void writeDataBusToPc(bool isLeastSigByte);
@@ -106,4 +110,6 @@ namespace CPU {
     };
 };
 
+
 #endif
+

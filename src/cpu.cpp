@@ -8,6 +8,18 @@ CPU::Core::Core(Emulator::MainBus &t_bus) : bus(t_bus) {
     // to copy
     // instructionTable[0x] = { , , RWSignal::, AddressingMode::, &Core:: };
     
+
+    // ADC
+    instructionTable[0x69] = { 2, 2, RWSignal::read, AddressingMode::Immediate, &Core::ADC };
+    instructionTable[0x65] = { 2, 3, RWSignal::read, AddressingMode::ZeroPage, &Core::ADC };
+    instructionTable[0x75] = { 2, 4, RWSignal::read, AddressingMode::ZeroPageIndexedX, &Core::ADC };
+    instructionTable[0x6d] = { 3, 4, RWSignal::read, AddressingMode::Absolute, &Core::ADC };
+    instructionTable[0x7d] = { 3, 5, RWSignal::read, AddressingMode::AbsoluteIndexedX, &Core::ADC };
+    instructionTable[0x79] = { 3, 5, RWSignal::read, AddressingMode::AbsoluteIndexedY, &Core::ADC };
+    instructionTable[0x61] = { 2, 6, RWSignal::read, AddressingMode::IndexedIndirectX, &Core::ADC };
+    instructionTable[0x71] = { 2, 6, RWSignal::read, AddressingMode::IndirectIndexedY, &Core::ADC };
+
+
     // LDA
     instructionTable[0xa9] = { 2, 2, RWSignal::read, AddressingMode::Immediate, &Core::LDA};
     instructionTable[0xa5] = { 2, 3, RWSignal::read, AddressingMode::ZeroPage, &Core::LDA};
@@ -73,6 +85,14 @@ CPU::Core::Core(Emulator::MainBus &t_bus) : bus(t_bus) {
 }
 
 
+template <typename T>
+uint8_t CPU::Core::getMostSigBit(T value) {
+    return (value >> (sizeof(T) * 8 - 1)) & 1;
+}
+
+template uint8_t CPU::Core::getMostSigBit<uint8_t>(uint8_t);
+template uint8_t CPU::Core::getMostSigBit<uint16_t>(uint16_t);
+
 
 void CPU::Core::addToPC(uint8_t add) {
     registers.PC += add;
@@ -108,6 +128,7 @@ void CPU::Core::incrementPC() {
     registers.PC++;
 }
 
+
 /* 
  * isSet = false
  * flag = D = 3
@@ -130,6 +151,11 @@ void CPU::Core::updateStatusRegister(StatusFlag flag, bool isSet) {
     uint8_t bitMask = ~(bit << flag);
     this->registers.P &= bitMask;
 }
+
+
+
+
+
 
 void CPU::Core::writeDataBusToPc(bool isLeastSigByte) {
     if(isLeastSigByte) {
@@ -158,7 +184,19 @@ void CPU::Core::writeResetVectorToAddrBus(bool isFirstByte) {
 
 
 void CPU::Core::ADC() {
+    uint8_t carryBit = (registers.P >> CPU::StatusFlag::C) & 1;
+    uint8_t aReg = registers.A;
+    uint16_t result = aReg + bus.data + carryBit;
 
+    registers.A = (uint8_t)result;
+
+    uint8_t aXorResult = getMostSigBit(aReg) ^ getMostSigBit(registers.A);
+    uint8_t resultXorMemory =  getMostSigBit(registers.A) ^ getMostSigBit(bus.data);
+
+    updateStatusRegister(StatusFlag::C, result > 0xff);
+    updateStatusRegister(StatusFlag::Z, registers.A == 0);
+    updateStatusRegister(StatusFlag::V, (aXorResult & resultXorMemory & 0x80) == 1);
+    updateStatusRegister(StatusFlag::N, getMostSigBit(registers.A) == 1);
 }
 
 
@@ -306,7 +344,7 @@ void CPU::Core::LDA() {
     registers.A = bus.data;
 
     updateStatusRegister(StatusFlag::Z, registers.A == 0);
-    updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
+    updateStatusRegister(StatusFlag::N, getMostSigBit(registers.A) == 1);
 }
 
 
@@ -315,7 +353,7 @@ void CPU::Core::LDX() {
     registers.X = bus.data;
 
     updateStatusRegister(StatusFlag::Z, registers.A == 0);
-    updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
+    updateStatusRegister(StatusFlag::N, getMostSigBit(registers.A) == 1);
 }
 
 
@@ -324,7 +362,7 @@ void CPU::Core::LDY() {
     registers.Y = bus.data;
 
     updateStatusRegister(StatusFlag::Z, registers.A == 0);
-    updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
+    updateStatusRegister(StatusFlag::N, getMostSigBit(registers.A) == 1);
 }
 
 
@@ -423,7 +461,7 @@ void CPU::Core::TAX() {
     registers.X = registers.A;
 
     updateStatusRegister(StatusFlag::Z, registers.A == 0);
-    updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
+    updateStatusRegister(StatusFlag::N, getMostSigBit(registers.A) == 1);
 }
 
 
@@ -431,7 +469,7 @@ void CPU::Core::TAY() {
     registers.Y = registers.A;
 
     updateStatusRegister(StatusFlag::Z, registers.A == 0);
-    updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
+    updateStatusRegister(StatusFlag::N, getMostSigBit(registers.A) == 1);
 }
 
 
@@ -439,7 +477,7 @@ void CPU::Core::TSX() {
     registers.X = registers.S;
 
     updateStatusRegister(StatusFlag::Z, registers.A == 0);
-    updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
+    updateStatusRegister(StatusFlag::N, getMostSigBit(registers.A) == 1);
 }
 
 
@@ -447,7 +485,7 @@ void CPU::Core::TXA() {
     registers.A = registers.X;
 
     updateStatusRegister(StatusFlag::Z, registers.A == 0);
-    updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
+    updateStatusRegister(StatusFlag::N, getMostSigBit(registers.A) == 1);
 }
 
 
@@ -455,7 +493,7 @@ void CPU::Core::TXS() {
     registers.S = registers.X;
 
     updateStatusRegister(StatusFlag::Z, registers.A == 0);
-    updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
+    updateStatusRegister(StatusFlag::N, getMostSigBit(registers.A) == 1);
 }
 
 
@@ -463,5 +501,5 @@ void CPU::Core::TYA() {
     registers.A = registers.Y;
 
     updateStatusRegister(StatusFlag::Z, registers.A == 0);
-    updateStatusRegister(StatusFlag::N, (registers.A) >> 7 == 1);
+    updateStatusRegister(StatusFlag::N, getMostSigBit(registers.A) == 1);
 }
